@@ -1,0 +1,115 @@
+﻿@model IEnumerable<DeltaxApplication.Models.Movie>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+<body>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+        function DeleteConfirm()
+        {
+
+            if (confirm("Are you sure want to delete record"))
+                return true;
+            else
+                return false;
+        }
+    </script>
+
+            @if (TempData["notice"] != null)
+            {
+
+
+    <div class="alert alert-warning">
+       
+        <strong>@TempData["notice"]</strong>
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    </div>
+
+
+            }
+
+
+
+    <table class="table table-bordered table-hover">
+        <tr>
+            <th>
+                Name
+            </th>
+            @*  <th>
+                    PLOT
+                </th>*@
+            <th>
+                YEAR OF RELEASE
+            </th>
+            <th>
+
+                Producer
+            </th>
+            <th>
+                Actors
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var mov in Model)
+        {
+            <tr>
+                <td>
+                    @Html.ActionLink(mov.Name, "Details", "Movie", new { id = mov.Id }, null)
+
+
+                </td>
+                @* <td>
+                        @Html.DisplayFor(modelItem => mov.Plot)
+                    </td>*@
+                <td>
+                    @mov.Year_Of_Release
+                </td>
+                <td>
+                    @Html.ActionLink(mov.Producer.Name, "Details", "Producer", new { id = mov.ProducerId }, null)
+
+
+                </td>
+                <td>
+                    @foreach (var x in mov.Actors)
+                    {
+                        @Html.ActionLink(x.Name, "Details", "Actor", new { id =x.Id }, null)
+
+
+
+                        <br />
+                    }
+                </td>
+                <td>
+                    @Html.ActionLink("edit", "Edit", "Movie", new { id = mov.Id }, null)
+                    <br />
+
+
+
+                    @Html.ActionLink("Delete", "Delete", "Movie", new { id = mov.Id }, new { onclick = " return DeleteConfirm()" })
+                </td>
+
+
+
+
+
+
+
+
+            </tr>
+        }
+
+    </table>
+
+
+
+</body>
