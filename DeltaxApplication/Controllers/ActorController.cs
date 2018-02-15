@@ -5,22 +5,23 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using DeltaxApplication.Models;
+using DeltaxApplication.Repository;
 
 namespace DeltaxApplication.Controllers
 {
     public class ActorController : Controller
     {
         // GET: Actor
-        private MovieEntitie _context;
+        private ActorRepository _actorRepository;
 
         public ActorController()
         {
-            _context = new MovieEntitie();
+            this._actorRepository = new ActorRepository(new MovieDbContext());
 
         }
         protected override void Dispose(bool disposing)
         {
-            _context.Dispose();
+            _actorRepository.Dispose();
         }
         public ActionResult Details(int? id)
         {
@@ -30,7 +31,7 @@ namespace DeltaxApplication.Controllers
 
             }
 
-            Actor x = _context.Actors.Find(id);
+            Actor x = _actorRepository.GetActor(id);
             return View(x);
         }
 
@@ -39,8 +40,8 @@ namespace DeltaxApplication.Controllers
         public JsonResult Save(Actor actor)
         {
 
-            _context.Actors.Add(actor);
-            _context.SaveChanges();
+            _actorRepository.AddActor(actor);
+           _actorRepository.SaveChanges();
             return Json(new
             {
                 actor

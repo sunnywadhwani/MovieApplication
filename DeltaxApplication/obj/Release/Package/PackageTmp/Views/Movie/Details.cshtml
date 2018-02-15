@@ -1,0 +1,86 @@
+﻿@using DeltaxApplication.Models
+
+@model DeltaxApplication.Models.Movie
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details:</h2>
+
+<body>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+
+
+    <h4>
+        @Html.DisplayFor(model => model.Name)
+    </h4>
+    @if (ViewBag.ImageToShow != null)
+    {
+
+        @Html.DisplayNameFor(model => model.Poster)
+
+
+    }
+    @*@{
+            var base64 = Convert.ToBase64String(Model.Poster);
+            var imgsrc = string.Format("data:image/png;base64,", base64);
+        }
+    *@
+    @if (ViewBag.Image != null)
+    {
+        @Html.Raw("<img id=\"imageid\" src=\"data:image/JPG;base64," + ViewBag.Image + "\" height=\"250\" width=\"250\" />")
+    }
+
+    <table class="table table-bordered ">
+
+        <tr>
+            <th>
+                Plot
+            </th>
+
+            <td>
+                @Html.DisplayFor(model => model.Plot)
+            </td>
+        </tr>
+        <tr>
+            <th>
+                YEAR OF RELEASE
+            </th>
+
+            <td>
+                @Html.DisplayFor(model => model.Year_Of_Release)
+            </td>
+        </tr>
+        <tr>
+            <th>
+                Producer
+            </th>
+
+            <td>
+                @Html.ActionLink(Model.Producer.Name, "Details", "Producer", new { id = Model.Id }, null)
+            </td>
+        </tr>
+        <tr>
+            <th>Actors</th>
+            <td>
+                @foreach (var x in Model.Actors)
+                {
+                    @Html.ActionLink(x.Name, "Details", "Actor", new { id = x.Id }, null)
+
+                    <br />
+
+                }
+            </td>
+        </tr>
+
+    </table>
+</body>
+
+

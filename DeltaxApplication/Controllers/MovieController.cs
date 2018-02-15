@@ -9,7 +9,7 @@ using DeltaxApplication.ViewModel;
 using System.Web;
 using System.Web.Mvc;
 using DeltaxApplication.Models;
-
+using DeltaxApplication.Repository;
 using Microsoft.Ajax.Utilities;
 
 namespace deltaxapp.Controllers
@@ -17,24 +17,28 @@ namespace deltaxapp.Controllers
     public class MovieController : Controller
     {
         // GET: Movie
-        private MovieEntitie _context;
+        private MovieRepository _movieRepository;
+        private ActorRepository _actorRepository;
+        private ProducerRepository _producerRepository;
 
         public MovieController()
         {
-            _context = new MovieEntitie();
+            var context = new MovieDbContext();
+            this._movieRepository = new MovieRepository(context);
+            this._producerRepository=new ProducerRepository(context);
+            this._actorRepository=new ActorRepository(context);
 
         }
         protected override void Dispose(bool disposing)
         {
-            _context.Dispose();
+            _movieRepository.Dispose();
         }
 
         public ActionResult Index()
 
-
         {
-            var films = _context.Movies.Include(c => c.Producer).Include(f => f.Actors).ToList();
-            return View(films);
+            var movies = _movieRepository.GetMovies();
+            return View(movies);
         }
         /* 
        public ActionResult AddImage()
@@ -60,8 +64,8 @@ namespace deltaxapp.Controllers
  */
         public ActionResult New()
         {
-            var producers = _context.Producers.ToList();
-            var actors = _context.Actors.ToList();
+            var producers = _producerRepository.GetProducers();
+            var actors = _actorRepository.GetActors();
             var viewModel = new NewMovieViewModel
             {
                 Producers = producers,
@@ -72,15 +76,15 @@ namespace deltaxapp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create( Movie movies, HttpPostedFileBase image1)
+        public ActionResult Create( Movie movie, HttpPostedFileBase image1)
         {
             HashSet<Actor> selectedActors = new HashSet<Actor>();
             if (ModelState.IsValid)
             {
                 if (image1 != null)
                 {
-                    movies.Poster = new byte[image1.ContentLength];
-                    image1.InputStream.Read(movies.Poster, 0, image1.ContentLength);
+                    movie.Poster = new byte[image1.ContentLength];
+                    image1.InputStream.Read(movie.Poster, 0, image1.ContentLength);
                 }
 
 
@@ -89,28 +93,33 @@ namespace deltaxapp.Controllers
 
 
 
-                if (movies.Id == 0)
+                if (movie.Id == 0)
                 {
 
-                    foreach (var x in movies.SelectedActorIds)
+                    foreach (var x in movie.SelectedActorIds)
                     {
-                        selectedActors.Add(_context.Actors.SingleOrDefault(i=>i.Id==x));
+                      //  selectedActors.Add(_context.Actors.SingleOrDefault(i=>i.Id==x));
+                        selectedActors.Add(_actorRepository.GetActor(x));
                     }
 
-                    movies.Actors = selectedActors;
-                    _context.Movies.Add(movies);
-                    _context.SaveChanges();
+                    movie.Actors = selectedActors;
+                    //   _context.Movies.Add(movies);
+                    _movieRepository.AddMovie(movie);
+                   
+                   // _context.SaveChanges();
+                    _movieRepository.SaveChanges();
 
-                    TempData["notice"] = movies.Name + " Added Successfully ";
+                    TempData["notice"] = movie.Name + " Added Successfully ";
 
                 }
                 else
                 {
-                    var movindb = _context.Movies.Include(c => c.Actors).SingleOrDefault(c => c.Id == movies.Id);
-
+                   
+                    //var movindb = _context.Movies.Include(c => c.Actors).SingleOrDefault(c => c.Id == movies.Id);
+                    var movindb = _movieRepository.GetMovie(movie.Id);
                    var existingactorids= movindb.Actors.Select(actor=>actor.Id).ToList();
-                    var newactorids = movies.SelectedActorIds.Except(existingactorids);
-                    var deletedactorids = existingactorids.Except(movies.SelectedActorIds);
+                    var newactorids = movie.SelectedActorIds.Except(existingactorids);
+                    var deletedactorids = existingactorids.Except(movie.SelectedActorIds);
                     
                  //   foreach (var x in movies.SelectedActorIds)
                    // {
@@ -121,14 +130,16 @@ namespace deltaxapp.Controllers
 
                     foreach (var x in newactorids)
                     {
-                        var actor = _context.Actors.SingleOrDefault(a => a.Id == x);
+                       // var actor = _context.Actors.SingleOrDefault(a => a.Id == x);
+                        var actor = _actorRepository.GetActor(x);
                         movindb.Actors.Add(actor);
 
 
                     }
                     foreach (var x in deletedactorids)
                     {
-                        var actor = _context.Actors.SingleOrDefault(a => a.Id == x);
+                      //  var actor = _context.Actors.SingleOrDefault(a => a.Id == x);
+                        var actor = _actorRepository.GetActor(x);
                         movindb.Actors.Remove(actor);
 
 
@@ -137,29 +148,29 @@ namespace deltaxapp.Controllers
 
 
 
-                    movindb.Name = movies.Name;
-                    movindb.Plot = movies.Plot;
-                    movindb.Id = movies.Id;
-                    movindb.Year_Of_Release = movies.Year_Of_Release;
+                    movindb.Name = movie.Name;
+                    movindb.Plot = movie.Plot;
+                    movindb.Id = movie.Id;
+                    movindb.Year_Of_Release = movie.Year_Of_Release;
                    
-                    movindb.Poster = movies.Poster;
+                    movindb.Poster = movie.Poster;
+                    movindb.SelectedActorIds = movie.SelectedActorIds;
 
-
-                    _context.SaveChanges();
+                    _movieRepository.SaveChanges();
+                    TempData["notice"] = movie.Name + " Edited Successfully ";
                 }
-                TempData["notice"] = movies.Name + " Edited Successfully ";
 
                 return RedirectToAction("Index", "Movie");
             }
             else
             {
-                var producers = _context.Producers.ToList();
-                var actors = _context.Actors.ToList();
+                var producers = _producerRepository.GetProducers();
+                var actors = _actorRepository.GetActors();
                 var viewModel = new NewMovieViewModel
                 {
                     Producers = producers,
                     Actors= actors,
-                    Movies = movies
+                    Movie = movie
 
                 };
 
@@ -170,7 +181,8 @@ namespace deltaxapp.Controllers
 
         public ActionResult Edit(int id)
         {
-            var movie = _context.Movies.SingleOrDefault(c => c.Id == id);
+            //var movie = _context.Movies.SingleOrDefault(c => c.Id == id);
+            var movie = _movieRepository.GetMovie(id);
             if (movie == null)
             {
                 return HttpNotFound();
@@ -181,14 +193,18 @@ namespace deltaxapp.Controllers
             var viewModel = new NewMovieViewModel()
             {
 
-                Producers = _context.Producers.ToList(),
-                Actors = _context.Actors.ToList(),
-                Movies = movie
+                Producers = _producerRepository.GetProducers(),
+                Actors =_actorRepository.GetActors(),
+                Movie = movie
 
             };
 
 
+            if (movie.Poster != null)
+            {
+                ViewBag.Image = Convert.ToBase64String(movie.Poster);
 
+            }
 
 
 
@@ -202,13 +218,14 @@ namespace deltaxapp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Movie mov = _context.Movies.Find(id);
+
+            Movie mov = _movieRepository.GetMovie(id);
             if (mov == null)
             {
                 return HttpNotFound();
             }
-            _context.Movies.Remove(mov);
-            _context.SaveChanges();
+           _movieRepository.DeleteMovie(mov);
+            _movieRepository.SaveChanges();
 
             TempData["notice"] =mov.Name+ " Deleted Successfully ";
 
@@ -223,23 +240,23 @@ namespace deltaxapp.Controllers
 
             }
 
-            Movie film = _context.Movies.Find(id);
-            if (film == null)
+            Movie movie = _movieRepository.GetMovie(id);
+            if (movie == null)
             {
                 return HttpNotFound();
             }
 
-            if (film.Poster != null)
+            if (movie.Poster != null)
             {
-                ViewBag.Image = Convert.ToBase64String(film.Poster);
+                ViewBag.Image = Convert.ToBase64String(movie.Poster);
 
             }
-            else if (film.Poster == null)
+            else if (movie.Poster == null)
             {
                 ViewBag.Image = null;
             }
 
-            return View(film);
+            return View(movie);
 
 
         }

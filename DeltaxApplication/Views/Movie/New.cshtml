@@ -1,14 +1,12 @@
-﻿@model DeltaxApplication.ViewModel.NewMovieViewModel
+﻿@using DeltaxApplication.Models
+@model DeltaxApplication.ViewModel.NewMovieViewModel
 @{
     ViewBag.Title = "New";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<link href="~/Content/chosen.css" rel="stylesheet" />
 <script src="~/Scripts/chosen.jquery.js"></script>
-
-<script src="~/Scripts/Addactor.js"></script>
-<script src="~/Scripts/Modalopen.js"></script>
-<script src="~/Scripts/Addproducer.js"></script>
+<link href="~/Content/chosen.css" rel="stylesheet" />
+<script src="~/Scripts/New.js"></script>
 
 <style>
     .input-validation-error {
@@ -29,43 +27,63 @@
 {
     @Html.AntiForgeryToken()
     <div class="form-group">
-        @Html.LabelFor(n => n.Movies.Name)
-        @Html.TextBoxFor(n => n.Movies.Name, new { @class = "form-control" })
-        @Html.ValidationMessageFor(n => n.Movies.Name)
-        @if (Model.Movies != null)
+
+        @if (ViewBag.Image != null)
         {
-            @Html.HiddenFor(n => n.Movies.Id, new { @class = "form-control" })
+            @Html.Raw("<img id=\"imageid\" src=\"data:image/JPG;base64," + ViewBag.Image + "\"    height=\"180\" width=\"100\"/>")
+        }
+
+
+        <br />
+
+        @Html.LabelFor(n => n.Movie.Name)
+        @Html.TextBoxFor(n => n.Movie.Name, new { @class = "form-control" })
+        @Html.ValidationMessageFor(n => n.Movie.Name)
+        @if (Model.Movie != null)
+        {
+            @Html.HiddenFor(n => n.Movie.Id, new { @class = "form-control" })
         }
     </div>
     <div class="form-group">
-        @Html.LabelFor(n => n.Movies.Plot)
-        @Html.TextBoxFor(n => n.Movies.Plot, new { @class = "form-control" })
+        @Html.LabelFor(n => n.Movie.Plot)
+        @Html.TextBoxFor(n => n.Movie.Plot, new { @class = "form-control" })
     </div>
     <div class="form-group">
         <label>Producer</label>
         <br />
         @*  @Html.LabelFor(n => n.movies.Producer.Name)*@
-        @Html.DropDownListFor(n => n.Movies.ProducerId, new SelectList(Model.Producers, "Id", "Name"), new { @class = "form-control", id = "producerddl", style = "width: 300px;" })
+        @Html.DropDownListFor(n => n.Movie.ProducerId, new SelectList(Model.Producers, "Id", "Name"), new { @class = "form-control", id = "producerddl", style = "width: 300px;" })
 
-        <button type="button" id="prodid">+</button>
+        <button type="button" id="prodid">Add Producer</button>
     </div>
 
     <div class="form-group">
-        @Html.LabelFor(n => n.Movies.Year_Of_Release)
-        @Html.TextBoxFor(n => n.Movies.Year_Of_Release, new { @class = "form-control" })
-        @Html.ValidationMessageFor(n => n.Movies.Year_Of_Release)
+        @Html.LabelFor(n => n.Movie.Year_Of_Release)
+        @Html.TextBoxFor(n => n.Movie.Year_Of_Release, new { @class = "form-control" })
+
+        @Html.ValidationMessageFor(n => n.Movie.Year_Of_Release)
     </div>
     <div class="form-group">
 
 
-        @Html.LabelFor(n => n.Movies.Actors)
+        @Html.LabelFor(n => n.Movie.Actors)
         <br />
-        @Html.ListBoxFor(n => n.Movies.SelectedActorIds, new MultiSelectList(Model.Actors, "Id", "Name"), new { multiple = "multiple", id = "actorddl", style = "width: 600px;" })
+        @Html.ListBoxFor(n => n.Movie.SelectedActorIds, new MultiSelectList(Model.Actors, "Id", "Name"), new { multiple = "multiple", id = "actorddl", style = "width: 600px;" })
 
-        <button type="button" id="actid">+</button>
+        @Html.HiddenFor(m => m.Movie.Poster, new { @class = "form-control" })
+
+
+        <button type="button" id="actid">Add Actor</button>
+
+
+        <br />
+        @Html.ValidationMessageFor(n => n.Movie.SelectedActorIds)
+        <br />
     </div>
     <div class="col-md-10">
+
         <input type="file" id="image1" name="image1" size="25" />
+
     </div>
     <br />
     <br />
@@ -86,7 +104,8 @@
                 </div>
                 <div class="modal-body" id="modal-body">
                     <form id="actorform">
-                        Name: <input type="text" name="Name" id="actornameid" /> <br />
+                        Name: <input type="text" name="Name" id="actornameid" />
+                        <label id="actorlabel"></label><br />
                         Sex: <input type="radio" name="gender" value="Male" id="actormaleid" checked> Male
                         <input type="radio" name="gender" value="Female" id="actorfemaleid"> Female
                         <input type="radio" name="gender" value="Other" id="actorotherid"> Other <br />
@@ -111,23 +130,9 @@
         </div>
     </div>
 
-
-    <script type="text/javascript">
-
-        function validateForm() {
-            var x = document.forms["producerformname"]["Name"].value;
-            if (x == "") {
-                alert("Name must be filled out");
-                return false;
-            }
-        }
-
-
+    <script>
 
     </script>
-
-
-
 
 
 
@@ -146,9 +151,9 @@
                     <h4 class="modal-title">Create Producer</h4>
                 </div>
                 <div class="modal-body" id="modal-body">
-                    <form id="producerform" name="producerformname" onsubmit="return validateForm()" method="post" class="form-horizontal">
+                    <form role="form" id="producerform" name="producerformname" method="post" class="form-horizontal">
 
-                        Name: <input type="text" class="form-control " name="Name" id="producernameid" /> <br />
+                        Name: <input type="text" class="form-control " name="producernameid" id="producernameid" /> <br />
                         Sex: <input type="radio" name="gen" value="Male" id="producermaleid" checked> Male
                         <input type="radio" name="gen" value="Female" id="producerfemaleid"> Female
                         <input type="radio" name="gen" value="Other" id="producerotherid"> Other <br />
@@ -160,22 +165,20 @@
 
                             </textarea>
 
-                    </form>
-                    <div class="loader col-md-offset-4"></div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn-primary" id="producerbuttonid">Save</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                </div>
 
+                        <div class="loader col-md-offset-4"></div>
+
+                        <div class="modal-footer">
+                            <button type="submit" class="btn-primary" id="producerbuttonid">Save</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </form>
+                </div>
             </div>
 
         </div>
     </div>
-    <script>
-        $('#actorddl').chosen();
-        $('#producerddl').chosen();
-    </script>
+   
 
 
 

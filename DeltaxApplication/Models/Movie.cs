@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Web;
 
 namespace DeltaxApplication.Models
@@ -27,7 +28,9 @@ namespace DeltaxApplication.Models
         public virtual Producer Producer { get; set; }
 
         public virtual ICollection<Actor> Actors { get; set; }
-
+        [EnsureOneElement(ErrorMessage = "Atleast One Actor Needed To Be Selected")]
         [NotMapped] public List<int> SelectedActorIds { get; set; }
     }
+
+   
 }

@@ -1,0 +1,13 @@
+﻿
+@{
+    ViewBag.Title = "Add";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Add</h2>
+
+
+@using (Html.BeginForm("New", "Movie"))
+{
+    <button type="submit" class="btn btn-primary">Add</button>
+}

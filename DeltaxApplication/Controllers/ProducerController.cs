@@ -7,7 +7,9 @@ using System.Data;
 using System.Data.Entity;
 using System.Net;
 using System.Data.Entity.Validation;
+using DeltaxApplication.Interfaces;
 using DeltaxApplication.Models;
+using DeltaxApplication.Repository;
 using Microsoft.Ajax.Utilities;
 
 namespace DeltaxApplication.Controllers
@@ -15,15 +17,16 @@ namespace DeltaxApplication.Controllers
     public class ProducerController : Controller
     {
         // GET: Producer
-        private MovieEntitie _context;
+        private ProducerRepository _producerRepository;
 
         public ProducerController()
         {
-            _context = new MovieEntitie();
+            this._producerRepository = new ProducerRepository(new MovieDbContext());
+
         }
         protected override void Dispose(bool disposing)
         {
-            _context.Dispose();
+            _producerRepository.Dispose();
         }
         public ActionResult Index()
         {
@@ -37,7 +40,7 @@ namespace DeltaxApplication.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            Producer x = _context.Producers.Find(id);
+            Producer x = _producerRepository.GetProducer(id);
             return View(x);
 
         }
@@ -46,10 +49,10 @@ namespace DeltaxApplication.Controllers
         public JsonResult Save(Producer producer)
         {
            
-               
-            _context.Producers.Add(producer);
-            _context.SaveChanges();
-          
+              _producerRepository.AddProducer(producer);
+            _producerRepository.SaveChanges();
+
+
 
 
             return Json(new

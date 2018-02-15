@@ -10,6 +10,6 @@ namespace DeltaxApplication.ViewModel
     {
         public IEnumerable<Producer> Producers { get; set; }
         public IEnumerable<Actor> Actors { get; set; }
-        public Movie Movies { get; set; }
+        public Movie Movie { get; set; }
     }
 }

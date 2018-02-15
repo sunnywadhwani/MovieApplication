@@ -1,0 +1,53 @@
+﻿@model DeltaxApplication.Models.Actor
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+<body>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+
+
+    <h4>
+        @Html.DisplayFor(model => model.Name)
+    </h4>
+    <table class="table table-bordered ">
+        <tr>
+            <th>
+                SEX
+            </th>
+
+            <td>
+                @Html.DisplayFor(model => model.Sex)
+            </td>
+        </tr>
+        <tr>
+            <th>
+                D.O.B
+            </th>
+
+            <td>
+              @Model.DOB.Value.ToString("d")
+            </td>
+        </tr>
+        <tr>
+            <th>
+                Bio
+            </th>
+
+            <td>
+                @Html.DisplayFor(model => model.Bio)
+            </td>
+        </tr>
+
+
+
+
+    </table>
+</body>

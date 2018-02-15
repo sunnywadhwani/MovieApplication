@@ -3,3 +3,6 @@
 ################################################################################
 
 /.vs/DeltaxApplication/v15/.suo
+/.vs
+/DeltaxApplication/bin
+/DeltaxApplication/obj/Debug

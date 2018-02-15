@@ -12,9 +12,19 @@
             SEX: $("input:radio[name=gen]:checked").val()
         };
 
-        if ("#producernameid" == null) {
-            $("#myModalproducer").modal({ "backdrop": "static" });
-        } else {
+     /*   if ($("#producernameid").val()=="")
+        {
+
+
+
+            $('#myModalproducer').modal({
+                backdrop: 'static',
+                keyboard: false
+            })
+            
+        }
+        else*/
+        
             $.ajax({
                 type: "POST",
                 data: JSON.stringify(p),
@@ -36,7 +46,9 @@
                 }
 
             });
-    }
+        
+
+        
 
     });
 
