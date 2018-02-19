@@ -16,18 +16,11 @@ $(document).ready(function () {
         var p = { Name: $("#actornameid").val(), DOB: $("#actorbdayid").val(), BIO: $("#actorbioid").val(), SEX: $("input:radio[name=gender]:checked").val() };
 
 
-        var name = $("#actornameid").val();
-        var valid = true;
-
-        if (name === undefined || name === null || name === "") {
-            valid = false;
-            $('#actorlabel').html("Name field is required");
-        }
 
 
 
 
-        if (valid) {
+         
             $.ajax({
                 type: "POST",
                 data: JSON.stringify(p),
@@ -41,6 +34,7 @@ $(document).ready(function () {
 
                     $("#actorddl").append(opt);
                     $("#actorddl").trigger("chosen:updated");
+                    
                     $("#myModal").modal("toggle");
 
                 },
@@ -51,32 +45,14 @@ $(document).ready(function () {
 
             });
 
-        }
+        
     });
 
 
     $('#producerbuttonid').click(function () {
 
 
-        var p = {
-            Name: $("#producernameid").val(),
-            DOB: $("#producerbdayid").val(),
-            BIO: $("#producerbioid").val(),
-            SEX: $("input:radio[name=gen]:checked").val()
-        };
-
-        /*   if ($("#producernameid").val()=="")
-           {
-   
-   
-   
-               $('#myModalproducer').modal({
-                   backdrop: 'static',
-                   keyboard: false
-               })
-               
-           }
-           else*/
+        var p = { Name: $("#producernameid").val(),DOB: $("#producerbdayid").val(),BIO: $("#producerbioid").val(), SEX: $("input:radio[name=gen]:checked").val()};
 
         $.ajax({
             type: "POST",
@@ -86,10 +62,10 @@ $(document).ready(function () {
             url: "/Producer/Save",
             success: function (response) {
 
-                var opt = $("<option></option>").text(response.producer.Name).val(response.producer.Id);
+                var pk = $("<option></option>").text(response.producer.Name).val(response.producer.Id);
+                
 
-
-                $("#producerddl").append(opt);
+                $("#producerddl").append(pk);
                 $("#producerddl").trigger("chosen:updated");
                 $("#myModalproducer").modal("toggle");
 
@@ -106,34 +82,6 @@ $(document).ready(function () {
     });
     $('#actorddl').chosen();
     $('#producerddl').chosen();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 });

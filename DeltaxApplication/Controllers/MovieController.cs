@@ -224,14 +224,19 @@ namespace deltaxapp.Controllers
             {
                 return HttpNotFound();
             }
-           _movieRepository.DeleteMovie(mov);
+
+            _movieRepository.DeleteMovie(mov);
             _movieRepository.SaveChanges();
 
-            TempData["notice"] =mov.Name+ " Deleted Successfully ";
+            TempData["notice"] = mov.Name + " Deleted Successfully ";
 
 
             return RedirectToAction("Index", "Movie");
+
         }
+
+
+        
         public ActionResult Details(int? id)
         {
             if (id == null)

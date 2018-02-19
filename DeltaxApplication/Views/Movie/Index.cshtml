@@ -1,10 +1,15 @@
-﻿@model IEnumerable<DeltaxApplication.Models.Movie>
+﻿@using DeltaxApplication.Models
+@model IEnumerable<DeltaxApplication.Models.Movie>
 
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
 }
+
+
+
+
 
 <body>
     <meta charset="utf-8">
@@ -14,8 +19,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
     <script type="text/javascript">
-        function DeleteConfirm()
-        {
+        function DeleteConfirm() {
 
             if (confirm("Are you sure want to delete record"))
                 return true;
@@ -24,18 +28,18 @@
         }
     </script>
 
-            @if (TempData["notice"] != null)
-            {
+    @if (TempData["notice"] != null)
+    {
 
 
-    <div class="alert alert-warning">
-       
-        <strong>@TempData["notice"]</strong>
-        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-    </div>
+        <div class="alert alert-warning">
+
+            <strong>@TempData["notice"]</strong>
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        </div>
 
 
-            }
+    }
 
 
 
@@ -82,7 +86,7 @@
                 <td>
                     @foreach (var x in mov.Actors)
                     {
-                        @Html.ActionLink(x.Name, "Details", "Actor", new { id =x.Id }, null)
+                        @Html.ActionLink(x.Name, "Details", "Actor", new { id = x.Id }, null)
 
 
 

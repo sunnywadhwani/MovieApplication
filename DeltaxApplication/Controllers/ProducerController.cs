@@ -49,7 +49,7 @@ namespace DeltaxApplication.Controllers
         public JsonResult Save(Producer producer)
         {
            
-              _producerRepository.AddProducer(producer);
+            _producerRepository.AddProducer(producer);
             _producerRepository.SaveChanges();
 
 

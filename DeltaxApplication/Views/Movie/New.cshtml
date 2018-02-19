@@ -4,9 +4,10 @@
     ViewBag.Title = "New";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<script src="~/Scripts/chosen.jquery.js"></script>
 <link href="~/Content/chosen.css" rel="stylesheet" />
-<script src="~/Scripts/New.js"></script>
+
+@Scripts.Render("~/bundles/movies")
+@Styles.Render("~/Content/new")
 
 <style>
     .input-validation-error {
@@ -130,9 +131,7 @@
         </div>
     </div>
 
-    <script>
-
-    </script>
+    
 
 
 
@@ -151,7 +150,7 @@
                     <h4 class="modal-title">Create Producer</h4>
                 </div>
                 <div class="modal-body" id="modal-body">
-                    <form role="form" id="producerform" name="producerformname" method="post" class="form-horizontal">
+                    <form id="producerform">
 
                         Name: <input type="text" class="form-control " name="producernameid" id="producernameid" /> <br />
                         Sex: <input type="radio" name="gen" value="Male" id="producermaleid" checked> Male
@@ -169,7 +168,7 @@
                         <div class="loader col-md-offset-4"></div>
 
                         <div class="modal-footer">
-                            <button type="submit" class="btn-primary" id="producerbuttonid">Save</button>
+                            <button type="button" class="btn-primary" id="producerbuttonid">Save</button>
                             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                         </div>
                     </form>
@@ -181,7 +180,6 @@
    
 
 
-
-
+   
 }
 
